@@ -46,63 +46,46 @@ var hexToUtf8 = function(input) {
 
 var updateInput = function(input) {
   if (input.length && input.length > 0) {
-    var normalized = byteArraytoHexString(input);
+    var normalized = byteArraytoHexString(input)
   } else if (input.array) {
-    var normalized = byteArraytoHexString(input.array());
+    var normalized = byteArraytoHexString(input.array())
   } else {
-    var normalized = input.toString();
+    var normalized = input.toString()
   }
-  return normalized;
+  return normalized
 }
 
 Java.perform(function() {
   var MessageDigest = Java.use('java.security.MessageDigest')
-  var byteBuffer = Java.use('java.nio.ByteBuffer')
-
-  var b = JSON.stringify(byteBuffer)
-  console.log(b)
 
   if (MessageDigest.digest) {
     MessageDigest.digest.overload().implementation = function() {
-      var digest = this.digest.overloads[0].apply(this, arguments)
+      var digest = MessageDigest.digest.overload().apply(this, arguments)
       var algorithm = this.getAlgorithm().toString()
-      console.log('[hash][' + algorithm + '][digest]', byteArraytoHexString(digest))
+      console.log('[hash][' + algorithm + '][digest][output]', byteArraytoHexString(digest))
       return digest
     }
   }
 
   if (MessageDigest.update) {
-    MessageDigest.update.implementation = function () {}
-    MessageDigest.update.overloads[0].implementation = function(input) {
-      var algorithm = this.getAlgorithm().toString()
-      var hex = byteArraytoHexString(input)
-      console.log('[' + algorithm + '][update0][   hex   ]', hex)
-      console.log('[' + algorithm + '][update0][utf8/ansi]', hexToUtf8(hex))
-      return this.update.overloads[0].apply(this, arguments)
+    //MessageDigest.update.implementation = function () {}
+    var genUpdateFn = function(overload) {
+      return function(input) {
+        var retVal = overload.apply(this, arguments)
+        var algorithm = this.getAlgorithm().toString()
+        var hex = updateInput(input)
+        console.log('[hash][' + algorithm + '][update][input/hex ]', hex)
+        console.log('[hash][' + algorithm + '][update][input/utf8]', hexToUtf8(hex))
+        return retVal
+      }
     }
-
-    MessageDigest.update.overloads[1].implementation = function(input, offset, len) {
-      var algorithm = this.getAlgorithm().toString()
-      var hex = byteArraytoHexString(input)
-      console.log('[' + algorithm + '][update1][   hex   ]', hex)
-      console.log('[' + algorithm + '][update1][utf8/ansi]', hexToUtf8(hex))
-      return this.update.overloads[1].apply(this, arguments)
-    }
-
-    MessageDigest.update.overloads[2].implementation = function(input) {
-      var algorithm = this.getAlgorithm().toString()
-      var hex = byteArraytoHexString(input)
-      console.log('[' + algorithm + '][update2][   hex   ]', hex)
-      console.log('[' + algorithm + '][update2][utf8/ansi]', hexToUtf8(hex))
-      return this.update.overloads[2].apply(this, arguments)
-    }
-
-    MessageDigest.update.overloads[3].implementation = function(input) {
-      var algorithm = this.getAlgorithm().toString()
-      var hex = byteArraytoHexString(input)
-      console.log('[' + algorithm + '][update3][   hex   ]', hex)
-      console.log('[' + algorithm + '][update3][utf8/ansi]', hexToUtf8(hex))
-      return this.update.overloads[3].apply(this, arguments)
+    
+    var messageDigestUpdateOverloads = MessageDigest.update.overloads
+    for (var i = 0; i < messageDigestUpdateOverloads.length; i++) {
+      ;(function(index) {
+        var overload = messageDigestUpdateOverloads[index]
+        overload.implementation = genUpdateFn(overload)
+      })(i)
     }
   }
 })
