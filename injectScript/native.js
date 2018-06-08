@@ -2,16 +2,24 @@ Java.perform(function() {
   send('Running Script')
   var securityCheck = undefined
   exports = Module.enumerateExportsSync('libdvm.so')
-  for (i = 0; i < exports.length; i++) {
-    if (exports[i].name == 'Java_com_yaotong_crackme_MainActivity_securityCheck') {
-      securityCheck = exports[i].address
-      send('securityCheck is at ' + securityCheck)
-      break
+  exports.forEach(function(ex) {
+    if (~ex.name.indexOf('dvmDexFileOpenPartial')) {
+      securityCheck = ex.address
+      console.log('[nativeHook][found]', 'dvmDexFileOpenPartial is at ' + ex.address)
     }
+  })
+
+  if (!securityCheck) {
+    send('not found')
+    return
   }
+
   Interceptor.attach(securityCheck, {
-    onEnter: function(args) {
-      send('key is: ' + Memory.readUtf8String(Memory.readPointer(securityCheck.sub(0x11a8).add(0x628c))))
+    onEnter: function() {
+      var args = arguments
+      args.forEach(function(arg){
+        console.log('arg', arg)
+      })
     }
   })
 })

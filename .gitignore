@@ -1,6 +1,9 @@
 # frida-server
 frida-server
 
+# dump
+dump*
+
 # Logs
 logs
 *.log

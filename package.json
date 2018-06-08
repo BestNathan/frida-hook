@@ -7,9 +7,20 @@
     "frida": "^11.0.3"
   },
   "scripts": {
-    "start": "node index"
+    "start": "node index.js ",
+    "hash": "node index.js hash",
+    "cipher": "node index.js cipher",
+    "native": "node index.js native",
+    "dumpDex":"node ./src/dumpDex.js",
+    "dumpm": "node ./src/dumpModule.js",
+    "dumpc": "node ./src/dumpClass.js",
+    "babel": "babel ./injectScript/hash.js -d ./injectScript"
   },
   "keywords": [],
   "author": "Nathan",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1"
+  }
 }

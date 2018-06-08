@@ -1,32 +1,8 @@
 'use strict';
 
 Java.perform(function () {
-    // Java.enumerateLoadedClasses({
-    //     onMatch: function (loadedClass){
-    //         console.log('[loaded]',loadedClass)
-    //     }
-    // })
-    // Java.choose('com.ss.android.common.applog.UserInfo', {
-    //     onMatch: function (instance){
-    //         console.log('get it')
-    //     },
-    //     onComplete: function () {
-    //         console.log('complete')
-    //     }
-    // })
 
     var userinfo = Java.use('com.ss.android.common.applog.UserInfo')
-    var Cipher = Java.use("javax.crypto.Cipher");
-
-    Cipher.getInstance.implementation = function () {
-        
-    }
-    Cipher.init.implementation = function () {
-        
-    }
-    Cipher.dofinal.implementation = function () {
-        
-    }
 
     userinfo.getUserInfo.overload('int', 'java.lang.String', '[Ljava.lang.String;').implementation = function (arg0, arg1, arg2) {
         
@@ -54,6 +30,4 @@ Java.perform(function () {
         return res
     }
 
-    // var test = Module.findExportByName(null, 'info')
-    // console.log(test)
 })

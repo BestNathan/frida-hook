@@ -1,19 +1,3 @@
-/**
- * Copyright (c) 2016 Nishant Das Patnaik.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- **/
-
 'use strict'
 
 var base64 = (function() {
@@ -192,10 +176,24 @@ Java.perform(function() {
       }
     }
 
-    var cipherInitOverload0 = Cipher.init.overload('int', 'java.security.cert.Certificate', 'java.security.SecureRandom')
+    var cipherInitOverload0 = Cipher.init.overload(
+      'int',
+      'java.security.cert.Certificate',
+      'java.security.SecureRandom'
+    )
     var cipherInitOverload1 = Cipher.init.overload('int', 'java.security.Key', 'java.security.SecureRandom')
-    var cipherInitOverload2 = Cipher.init.overload('int', 'java.security.Key', 'java.security.spec.AlgorithmParameterSpec', 'java.security.SecureRandom')
-    var cipherInitOverload3 = Cipher.init.overload('int', 'java.security.Key', 'java.security.AlgorithmParameters', 'java.security.SecureRandom')
+    var cipherInitOverload2 = Cipher.init.overload(
+      'int',
+      'java.security.Key',
+      'java.security.spec.AlgorithmParameterSpec',
+      'java.security.SecureRandom'
+    )
+    var cipherInitOverload3 = Cipher.init.overload(
+      'int',
+      'java.security.Key',
+      'java.security.AlgorithmParameters',
+      'java.security.SecureRandom'
+    )
 
     cipherInitOverload0.implementation = genInitFn(cipherInitOverload0)
     cipherInitOverload1.implementation = genInitFn(cipherInitOverload1)
@@ -210,18 +208,27 @@ Java.perform(function() {
         var retVal = overload.apply(this, arguments)
         var argLen = arguments.length
         switch (argLen) {
+          case 1:
+            input = arguments[0]
+            output = retVal
+            break
           case 2:
             console.warn('!![cipher][update][warn] have two args')
             break
-          case 1:
           case 3:
+            input = arguments[0]
+            inputOffset = arguments[1]
+            inputLen = arguments[2]
+            input = byteArraySlice(input, inputOffset, inputLen)
+            output = retVal
+            break
           case 4:
           case 5:
             input = arguments[0]
             inputOffset = arguments[1]
             inputLen = arguments[2]
             output = arguments[3]
-            (input && inputOffset && inputLen) && (input = byteArraySlice(input, inputOffset, inputLen))
+            input = byteArraySlice(input, inputOffset, inputLen)
             break
           default:
             break
@@ -235,10 +242,10 @@ Java.perform(function() {
           console.log('[cipher][update][input][utf8/ansi]', hexToUtf8(inputhex))
         }
 
-        if (!output) {
-          output = retVal
+        if (output) {
+          console.log('[cipher][update][output][base64]', base64.encode(output))
+          console.log('[cipher][update][output][ hex  ]', byteArraytoHexString(output))
         }
-        console.log('[cipher][update][output][base64]', base64.encode(output))
 
         return retVal
       }
@@ -265,19 +272,30 @@ Java.perform(function() {
         // }
         var argLen = arguments.length
         switch (argLen) {
+          case 0:
+            output = retVal
+            break
+          case 1:
+            input = arguments[0]
+            output = retVal
+            break
           case 2:
             console.warn('!![cipher][dofinal][warn] have two args')
             break
-          case 0:
-          case 1:
           case 3:
+            input = arguments[0]
+            inputOffset = arguments[1]
+            inputLen = arguments[2]
+            input = byteArraySlice(input, inputOffset, inputLen)
+            output = retVal
+            break
           case 4:
           case 5:
             input = arguments[0]
             inputOffset = arguments[1]
             inputLen = arguments[2]
-            output = arguments[3]
             input = byteArraySlice(input, inputOffset, inputLen)
+            output = arguments[3]
             break
           default:
             break
@@ -291,10 +309,10 @@ Java.perform(function() {
           console.log('[cipher][dofinal][input][utf8/ansi]', hexToUtf8(inputhex))
         }
 
-        if (!output) {
-          output = retVal
+        if (output) {
+          console.log('[cipher][dofinal][output][base64]', base64.encode(output))
+          console.log('[cipher][dofinal][output][ hex  ]', byteArraytoHexString(output))
         }
-        console.log('[cipher][dofinal][output][base64]', base64.encode(output))
 
         return retVal
       }
